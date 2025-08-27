@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+    h2 { text-align: center; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    input, textarea, button { padding: 10px; font-size: 16px; border-radius: 6px; border: 1px solid #ccc; }
+    button { background: #006600; color: white; cursor: pointer; }
+    button:hover { background: #009900; }
+    a { display: block; text-align: center; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <h2>Admin Panel</h2>
+  <form id="postForm">
+    <input type="text" id="title" placeholder="Enter Title" required>
+    <textarea id="content" placeholder="Write your post..." required></textarea>
+    <button type="submit">Publish</button>
+  </form>
+  <a href="index.html">⬅ Back to Homepage</a>
+
+  <script src="admin.js"></script>
+</body>
+</html>
