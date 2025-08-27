@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akkar Environment Service</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+  h1 { text-align: center; }
+  .post { border: 1px solid #ccc; padding: 15px; margin: 15px 0; border-radius: 8px; position: relative; }
+  .post h3 { margin: 0 0 5px; color: #006600; }
+  .post .date { font-size: 12px; color: #555; margin-bottom: 10px; }
+  .post p { margin: 0; }
+  .post img { max-width: 100%; margin-top: 10px; border-radius: 6px; }
+  .post button { position: absolute; top: 10px; right: 10px; margin-left: 5px; padding: 5px 10px; font-size: 12px; border-radius: 5px; border: none; cursor: pointer; }
+  .editBtn { background: #ff9800; color: white; }
+  .editBtn:hover { background: #ffa726; }
+  .deleteBtn { background: #f44336; color: white; }
+  .deleteBtn:hover { background: #e53935; }
+  #adminPanel { margin-top: 30px; border-top: 2px dashed #aaa; padding-top: 20px; }
+  input, textarea, button { width: 100%; margin: 5px 0; padding: 10px; font-size: 16px; }
+  button[type="submit"] { background: #006600; color: white; }
+  button[type="submit"]:hover { background: #009900; }
+</style>
+</head>
+<body>
+<h1>🌿 Akkar Environment Service 🌿</h1>
+
+<!-- Admin Panel -->
+<div id="adminPanel">
+  <h2>🔑 Admin Panel</h2>
+  <form id="postForm">
+    <input type="text" id="title" placeholder="Enter Title" required>
+    <textarea id="content" placeholder="Write your post..." required></textarea>
+    <input type="file" id="image" accept="image/*">
+    <button type="submit">Publish</button>
+  </form>
+</div>
+
+<h2>Latest Posts</h2>
+<div id="posts"></div>
+
+<script>
+const form = document.getElementById("postForm");
+const postsDiv = document.getElementById("posts");
+
+function loadPosts() {
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+  postsDiv.innerHTML = "";
+  posts.forEach((post, index) => {
+    postsDiv.innerHTML += `
+      <div class="post">
+        <h3>${post.title}</h3>
+        <div class="date">${post.date}</div>
+        <p>${post.content}</p>
+        ${post.image ? `<img src="${post.image}" alt="Post Image">` : ""}
+        <button class="editBtn" onclick="editPost(${index})">Edit</button>
+        <button class="deleteBtn" onclick="deletePost(${index})">Delete</button>
+      </div>
+    `;
+  });
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  let title = document.getElementById("title").value;
+  let content = document.getElementById("content").value;
+  let imageFile = document.getElementById("image").files[0];
+  let date = new Date().toLocaleString(); // الوقت والتاريخ الحالي
+
+  if (imageFile) {
+    let reader = new FileReader();
+    reader.onload = function(event) {
+      savePost(title, content, event.target.result, date);
+    };
+    reader.readAsDataURL(imageFile);
+  } else {
+    savePost(title, content, null, date);
+  }
+});
+
+function savePost(title, content, image, date) {
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+  if (form.dataset.editIndex) {
+    const index = form.dataset.editIndex;
+    posts[index] = { title, content, image, date };
+    delete form.dataset.editIndex;
+  } else {
+    posts.unshift({ title, content, image, date });
+  }
+  localStorage.setItem("posts", JSON.stringify(posts));
+  form.reset();
+  loadPosts();
+}
+
+function deletePost(index) {
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+  posts.splice(index, 1);
+  localStorage.setItem("posts", JSON.stringify(posts));
+  loadPosts();
+}
+
+function editPost(index) {
+  let posts = JSON.parse(localStorage.getItem("posts")) || [];
+  const post = posts[index];
+  document.getElementById("title").value = post.title;
+  document.getElementById("content").value = post.content;
+  form.dataset.editIndex = index;
+  form.scrollIntoView({ behavior: "smooth" });
+}
+
+window.onload = loadPosts;
+</script>
+</body>
+</html>
